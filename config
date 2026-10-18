@@ -19,8 +19,9 @@ font-feature = +calt, +liga
 # =========================================================
 # Minimal Aesthetic & Focus
 # =========================================================
-# Custom OLED pitch black theme with flame accents (defined in ~/.config/ghostty/themes/)
-theme = blackflame
+# Automatically adjust terminal theme based on system appearance:
+# Melange: warm, low-contrast, paper-like palette optimal for reading & research
+theme = light:Melange Light,dark:Melange Dark
 # 0.92 opacity eliminates background noise while preserving subtle desktop depth
 background-opacity = 0.92
 
@@ -29,9 +30,8 @@ background-opacity = 0.92
 window-decoration = none
 
 # ---- Top bar & Tab bar -------------------------------------------------------
-# `ghostty` derives the titlebar from the terminal background/foreground, so any
-# decoration matches Melange Dark and the 0.92 opacity.
-window-theme = ghostty
+# Automatically match the window chrome with the system/desktop color scheme
+window-theme = auto
 
 # `flat` removes drop shadows so the terminal reads as a seamless surface.
 gtk-toolbar-style = flat

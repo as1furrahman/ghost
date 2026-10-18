@@ -48,11 +48,13 @@ ln -sf ~/Projects/spectre/config ~/.config/ghostty/config
 ln -sf ~/Projects/spectre/shaders/cursor_warp.glsl ~/.config/ghostty/shaders/cursor_warp.glsl
 ```
 
-### Themes
-Themes are kept modular and external. Set your preferred theme in `config` or in a `local.conf` override:
+### Themes & System Auto-Switching
+Ghostty automatically tracks your desktop environment's appearance (light or dark mode):
 ```ini
-theme = blackflame # Or any built-in ghostty theme (e.g., ghostty +list-themes)
+theme = light:Melange Light,dark:Melange Dark
+window-theme = auto
 ```
+You can customize this to any pair or override it locally in `local.conf`.
 
 ---
 
