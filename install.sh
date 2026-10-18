@@ -48,7 +48,7 @@ fi
 
 # 5. Font detection & automatic installer
 HAS_FONT=false
-if command -v fc-list &>/dev/null && fc-list : family | grep -qi "Cascadia Code NF"; then
+if command -v fc-list &>/dev/null && fc-list "Cascadia Code NF" : family | grep -i "Cascadia Code NF" >/dev/null; then
     HAS_FONT=true
 elif [ "$OS_TYPE" = "Darwin" ] && [ -d "$FONT_DIR/CascadiaCode" ]; then
     HAS_FONT=true

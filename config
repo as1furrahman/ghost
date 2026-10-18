@@ -2,7 +2,7 @@
 
 # --- Appearance & Theme ---
 theme = light:Melange Light,dark:Melange Dark
-window-decoration = none
+window-decoration = auto
 window-show-tab-bar = never
 window-padding-x = 12
 window-padding-y = 10
@@ -22,6 +22,7 @@ linux-cgroup-memory-limit = 8589934592
 linux-cgroup-processes-limit = 8192
 
 # --- Shell & Workflow ---
+command = /usr/bin/zsh
 scrollback-limit = 50000000
 copy-on-select = clipboard
 split-preserve-zoom = navigation
@@ -33,11 +34,12 @@ config-file = ?local.conf
 # --- Quick Terminal ---
 quick-terminal-size = 45%
 quick-terminal-autohide = true
-keybind = global:ctrl+grave_accent=toggle_quick_terminal
+keybind = ctrl+grave_accent=toggle_quick_terminal
 
 # --- Keybindings ---
 keybind = alt+equal=equalize_splits
 keybind = ctrl+shift+x=close_surface
+keybind = ctrl+shift+d=toggle_window_decorations
 keybind = ctrl+shift+b=toggle_tab_overview
 keybind = ctrl+shift+r=reload_config
 keybind = ctrl+shift+m=toggle_mouse_reporting

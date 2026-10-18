@@ -21,6 +21,7 @@ curl -fsSL https://raw.githubusercontent.com/as1furrahman/ghost/main/install.sh 
 | `Ctrl+\`` | Dropdown scratchpad terminal |
 | `Alt+=` | Equalize splits |
 | `Ctrl+Shift+X` | Close active split |
+| `Ctrl+Shift+D` | Toggle title bar & window decorations |
 | `Ctrl+Shift+B` | Tab overview |
 | `Ctrl+Shift+R` | Reload config |
 | `Ctrl+Shift+M` | Toggle mouse reporting |
