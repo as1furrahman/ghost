@@ -1,0 +1,11 @@
+# Machine-local overrides for Ghostty (ignored by git)
+# To use: cp local.conf.example local.conf
+
+# Example: Custom font size
+# font-size = 14
+
+# Example: Enable smooth cursor glide trail shader
+# custom-shader = shaders/cursor_warp.glsl
+
+# Example: Override with a fixed theme instead of system auto-switching
+# theme = blackflame

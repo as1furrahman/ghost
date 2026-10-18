@@ -24,9 +24,11 @@
 ghost/
 ├── config                # Core Ghostty configuration (~40 lines)
 ├── install.sh            # Automated setup script for new systems
+├── local.conf.example    # Template for machine-local customizations
 ├── shaders/
 │   └── cursor_warp.glsl  # Optional OpenGL cursor animation shader
 ├── .gitignore            # Ignores local.conf and OS metadata
+├── LICENSE               # MIT License
 └── README.md
 ```
 

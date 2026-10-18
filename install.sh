@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty"
@@ -7,49 +7,59 @@ FONT_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
 
 echo "👻 Installing Ghost Ghostty Configuration..."
 
-# 1. Create Ghostty config directory
+# 1. Ensure target config directory exists
 mkdir -p "$CONFIG_DIR"
 
-# 2. Backup existing config if it is a regular file (not our symlink)
+# 2. Backup existing regular config file (skip if already a symlink)
 if [ -f "$CONFIG_DIR/config" ] && [ ! -L "$CONFIG_DIR/config" ]; then
-    echo "📦 Backing up existing config to $CONFIG_DIR/config.bak"
-    mv "$CONFIG_DIR/config" "$CONFIG_DIR/config.bak"
+    BACKUP_PATH="$CONFIG_DIR/config.backup.$(date +%Y%m%d%H%M%S)"
+    echo "📦 Backing up existing config to $BACKUP_PATH"
+    mv "$CONFIG_DIR/config" "$BACKUP_PATH"
 fi
 
-# 3. Symlink configuration
+# 3. Create config symlink
 echo "🔗 Linking config -> $CONFIG_DIR/config"
 ln -sf "$REPO_DIR/config" "$CONFIG_DIR/config"
 
-# 4. Optional: Symlink shaders if present
-if [ -d "$REPO_DIR/shaders" ]; then
+# 4. Optional shaders directory link
+if [ -f "$REPO_DIR/shaders/cursor_warp.glsl" ]; then
     mkdir -p "$CONFIG_DIR/shaders"
     ln -sf "$REPO_DIR/shaders/cursor_warp.glsl" "$CONFIG_DIR/shaders/cursor_warp.glsl"
 fi
 
-# 5. Check font dependency
-if ! fc-list : family | grep -qi "Cascadia Code NF"; then
-    echo "⚠️  'Cascadia Code NF' font not detected."
-    read -p "Would you like to install CascadiaCode Nerd Font automatically? [y/N] " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+# 5. Font detection & automatic installer
+if command -v fc-list &>/dev/null && fc-list : family | grep -qi "Cascadia Code NF"; then
+    echo "✅ 'Cascadia Code NF' font is installed."
+else
+    echo "⚠️  'Cascadia Code NF' font was not detected."
+    INSTALL_FONT="n"
+    if [ -t 0 ]; then
+        read -p "Would you like to auto-download CascadiaCode Nerd Font? [Y/n] " -n 1 -r
+        echo
+        [[ ! $REPLY =~ ^[Nn]$ ]] && INSTALL_FONT="y"
+    else
+        INSTALL_FONT="y"
+    fi
+
+    if [ "$INSTALL_FONT" = "y" ] && command -v curl &>/dev/null && command -v tar &>/dev/null; then
         echo "⬇️  Downloading CascadiaCode Nerd Font..."
         mkdir -p "$FONT_DIR/CascadiaCode"
         curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.tar.xz" | tar -xJ -C "$FONT_DIR/CascadiaCode"
-        fc-cache -fv "$FONT_DIR/CascadiaCode" > /dev/null
+        if command -v fc-cache &>/dev/null; then
+            fc-cache -fv "$FONT_DIR/CascadiaCode" > /dev/null || true
+        fi
         echo "✅ CascadiaCode Nerd Font installed successfully!"
     else
-        echo "ℹ️  Remember to install 'Cascadia Code NF' or set your preferred font in $CONFIG_DIR/config"
+        echo "ℹ️  Please install 'Cascadia Code NF' manually or customize your font in $CONFIG_DIR/local.conf"
     fi
-else
-    echo "✅ 'Cascadia Code NF' font is already installed."
 fi
 
-# 6. Verify ghostty installation
+# 6. Validate configuration if ghostty is installed
 if command -v ghostty &>/dev/null; then
     echo "🔍 Validating Ghostty configuration..."
-    ghostty +validate-config
-    echo "✨ Ghostty setup is complete and verified 10/10!"
+    if ghostty +validate-config; then
+        echo "✨ Setup complete! Ghostty configuration verified 10/10."
+    fi
 else
-    echo "⚠️  Ghostty is not installed yet."
-    echo "   Install Ghostty from https://ghostty.org/docs/install or your package manager."
+    echo "ℹ️  Ghostty binary not found. Install it from https://ghostty.org/docs/install"
 fi
