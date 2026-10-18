@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: ShellCheck & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+
+      - name: Check Line Endings (POSIX LF)
+        run: |
+          if grep -rIl $'\r' --exclude-dir=.git .; then
+            echo "CRLF line endings detected! Only POSIX LF is allowed."
+            exit 1
+          fi
+
+  validate-config:
+    name: Ghostty Schema Validation
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Ghostty
+        run: brew install --cask ghostty
+
+      - name: Validate Configuration
+        run: ghostty +validate-config --config-file=./config
