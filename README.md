@@ -23,6 +23,7 @@
 ```text
 ghost/
 ├── config                # Core Ghostty configuration (~40 lines)
+├── install.sh            # Automated setup script for new systems
 ├── shaders/
 │   └── cursor_warp.glsl  # Optional OpenGL cursor animation shader
 ├── .gitignore            # Ignores local.conf and OS metadata
@@ -31,15 +32,24 @@ ghost/
 
 ---
 
-## Installation & Symlinking
+## Reproduce on a New System
+
+### 1. Install Ghostty
+Install Ghostty on your system following [Ghostty Installation Docs](https://ghostty.org/docs/install) (or via your distribution's package manager).
+
+### 2. Run Setup Script
+Clone or copy this repository to your new machine, then run:
 
 ```bash
-# Ensure Ghostty config directory exists
-mkdir -p ~/.config/ghostty
-
-# Symlink config
-ln -sf ~/Projects/ghost/config ~/.config/ghostty/config
+cd ~/Projects/ghost
+./install.sh
 ```
+
+The script will automatically:
+- Back up any existing `~/.config/ghostty/config`.
+- Symlink the `ghost` configuration.
+- Check and offer to auto-download **CascadiaCode Nerd Font** if missing.
+- Validate the configuration (`ghostty +validate-config`).
 
 ---
 
