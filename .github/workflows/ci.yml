@@ -26,6 +26,12 @@ jobs:
             exit 1
           fi
 
+      - name: Test Installer Sandbox
+        run: |
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/.config"
+          export XDG_DATA_HOME="$RUNNER_TEMP/.local/share"
+          ./install.sh
+
   validate-config:
     name: Ghostty Schema Validation
     runs-on: macos-latest
@@ -34,7 +40,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Ghostty
-        run: brew install --cask ghostty
+        run: |
+          brew install --cask ghostty
+          sudo ln -sf /Applications/Ghostty.app/Contents/MacOS/ghostty /usr/local/bin/ghostty
+          ghostty --version
 
       - name: Validate Configuration
         run: ghostty +validate-config --config-file=./config
