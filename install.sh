@@ -27,12 +27,7 @@ if [ -f "$REPO_DIR/shaders/cursor_warp.glsl" ]; then
     ln -sf "$REPO_DIR/shaders/cursor_warp.glsl" "$CONFIG_DIR/shaders/cursor_warp.glsl"
 fi
 
-# 5. Provide local.conf.example template in config directory if missing
-if [ -f "$REPO_DIR/local.conf.example" ] && [ ! -f "$CONFIG_DIR/local.conf.example" ]; then
-    cp "$REPO_DIR/local.conf.example" "$CONFIG_DIR/local.conf.example"
-fi
-
-# 6. Font detection & automatic installer
+# 5. Font detection & automatic installer
 if command -v fc-list &>/dev/null && fc-list : family | grep -qi "Cascadia Code NF"; then
     echo "✅ 'Cascadia Code NF' font is installed."
 else
@@ -59,7 +54,7 @@ else
     fi
 fi
 
-# 7. Validate configuration if ghostty is installed
+# 6. Validate configuration if ghostty is installed
 if command -v ghostty &>/dev/null; then
     echo "🔍 Validating Ghostty configuration..."
     if ghostty +validate-config; then
