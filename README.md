@@ -23,7 +23,3 @@ cd ~/Projects/ghost
 | `Ctrl+Alt+R` | Toggle read-only guard |
 | `Alt+U` | Copy URL under cursor |
 | `Ctrl+Alt+E` | Open scrollback in `$EDITOR` |
-
-## License
-
-[MIT](LICENSE)
