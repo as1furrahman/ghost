@@ -3,9 +3,15 @@ Minimal Ghostty terminal setup.
 ## Install
 
 ```bash
-git clone git@github.com:as1furrahman/ghost.git ~/Projects/ghost
+git clone https://github.com/as1furrahman/ghost.git ~/Projects/ghost
 cd ~/Projects/ghost
 ./install.sh
+```
+
+Or via one-liner:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/as1furrahman/ghost/main/install.sh | bash
 ```
 
 ## Keybindings

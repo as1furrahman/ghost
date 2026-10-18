@@ -1,9 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Determine repo directory (supports both local checkout and curl | bash)
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+    REPO_DIR="${GHOST_DIR:-$HOME/.local/share/ghost}"
+    if [ ! -d "$REPO_DIR" ]; then
+        echo "📦 Cloning ghost repository to $REPO_DIR..."
+        git clone https://github.com/as1furrahman/ghost.git "$REPO_DIR"
+    else
+        echo "🔄 Updating ghost repository at $REPO_DIR..."
+        git -C "$REPO_DIR" pull --ff-only || true
+    fi
+fi
+
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty"
-FONT_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+
+OS_TYPE="$(uname -s)"
+if [ "$OS_TYPE" = "Darwin" ]; then
+    FONT_DIR="$HOME/Library/Fonts"
+else
+    FONT_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+fi
 
 echo "👻 Installing Ghost Ghostty Configuration..."
 
@@ -28,7 +47,14 @@ if [ -f "$REPO_DIR/shaders/cursor_warp.glsl" ]; then
 fi
 
 # 5. Font detection & automatic installer
+HAS_FONT=false
 if command -v fc-list &>/dev/null && fc-list : family | grep -qi "Cascadia Code NF"; then
+    HAS_FONT=true
+elif [ "$OS_TYPE" = "Darwin" ] && [ -d "$FONT_DIR/CascadiaCode" ]; then
+    HAS_FONT=true
+fi
+
+if [ "$HAS_FONT" = true ]; then
     echo "✅ 'Cascadia Code NF' font is installed."
 else
     echo "⚠️  'Cascadia Code NF' font was not detected."
@@ -50,7 +76,7 @@ else
         fi
         echo "✅ CascadiaCode Nerd Font installed successfully!"
     else
-        echo "ℹ️  Please install 'Cascadia Code NF' manually or customize your font in $CONFIG_DIR/local.conf"
+        echo "ℹ️  Please install 'Cascadia Code NF' manually if icons do not render."
     fi
 fi
 
