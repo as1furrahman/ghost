@@ -1,5 +1,3 @@
-# ghost 👻
-
 Minimal Ghostty terminal setup.
 
 ## Install
