@@ -8,7 +8,7 @@
 
 ## Highlights
 
-- **Stealth Aesthetic**: Completely borderless (`window-decoration = none`, hidden top tab bar), 0.92 background opacity with cell-level transparency support for Neovim/tmux, and balanced padding.
+- **Minimal Aesthetic**: Completely borderless (`window-decoration = none`, hidden top tab bar), crisp solid background (default opacity), system theme auto-tracking, and balanced padding.
 - **Smooth Cursor Physics**: Custom GLSL cursor warp shader (`shaders/cursor_warp.glsl`) offering Neovide-like fluid cursor glide trails.
 - **Typography & Ligatures**: Tuned for `Cascadia Code NF` (and `Cascadia Mono NF`) at 13pt with explicit ligatures (`+calt, +liga`) and 25% icon height adjustment.
 - **Performance & Isolation**:

@@ -20,55 +20,23 @@ font-feature = +calt, +liga
 # Minimal Aesthetic & Focus
 # =========================================================
 # Automatically adjust terminal theme based on system appearance:
-# Melange: warm, low-contrast, paper-like palette optimal for reading & research
 theme = light:Melange Light,dark:Melange Dark
-# 0.92 opacity eliminates background noise while preserving subtle desktop depth
-background-opacity = 0.92
-
-# Completely borderless: no window decorations, titlebars, or buttons.
-# Moving and resizing is handled by the window manager (Super+drag on GNOME).
-window-decoration = none
-
-# ---- Top bar & Tab bar -------------------------------------------------------
-# Automatically match the window chrome with the system/desktop color scheme
 window-theme = auto
 
-# `flat` removes drop shadows so the terminal reads as a seamless surface.
-gtk-toolbar-style = flat
-
-# `native` keeps titlebar and tab strip separate so window-show-tab-bar
-# cleanly controls tab strip suppression without conflicting with header styles.
-gtk-titlebar-style = native
-
-# Hide the top tab bar completely for a pure borderless look.
-# Tabs remain fully navigable via keybindings (ctrl+tab, alt+1..9)
-# and visually accessible via the tab overview (ctrl+shift+b).
+# Minimal borderless presentation (no titlebars, hidden tab bar)
+window-decoration = none
 window-show-tab-bar = never
 
-# Clean, non-distracting cursor
+# Clean cursor & typing focus
 cursor-style = bar
 cursor-style-blink = false
+mouse-hide-while-typing = true
 
-# Balanced margins prevent text crowding against window borders
+# Comfortable balanced padding
 window-padding-x = 12
 window-padding-y = 10
 window-padding-balance = true
 confirm-close-surface = false
-
-# Hide mouse pointer while typing to keep reading flow unobstructed
-mouse-hide-while-typing = true
-
-# Dim inactive splits to 65% so the active reading/coding buffer stands out
-unfocused-split-opacity = 0.65
-
-# Apply that same 0.92 opacity to cells that set an explicit background colour.
-# Without this, apps that repaint their own background — Neovim and tmux are the
-# documented examples — stay fully opaque and the transparency looks broken.
-background-opacity-cells = true
-
-# Ensures minimum contrast on transparent backgrounds.
-# 1.1 avoids invisible text without forcing colors toward unnatural extremes.
-minimum-contrast = 1.1
 
 # =========================================================
 # Session & Daemon Behaviour
