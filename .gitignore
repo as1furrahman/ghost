@@ -1,0 +1,8 @@
+# Machine-local overrides (not tracked in git)
+local.conf
+*.local.conf
+
+# Editor & OS temporary files
+.DS_Store
+*~
+*.swp

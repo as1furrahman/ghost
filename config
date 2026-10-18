@@ -1,0 +1,267 @@
+# Ghostty Configuration — Spectre
+# Minimalist, high-productivity & research-focused configuration.
+
+# =========================================================
+# Typography & Icons
+# =========================================================
+font-family = "Cascadia Code NF"
+font-family = "Cascadia Mono NF"
+font-size = 13
+adjust-icon-height = 25%
+
+# Programming ligatures, stated explicitly rather than inherited from the font's
+# own defaults. Cascadia Code carries them under `calt`. `+dlig` would add its
+# discretionary set, and stylistic sets (`ss01`-`ss20`) / character variants
+# (`cv01`+) expose alternate glyphs — check what this font build actually ships
+# (fontdrop.info) before enabling those, since the names differ per family.
+font-feature = +calt, +liga
+
+# =========================================================
+# Minimal Aesthetic & Focus
+# =========================================================
+# Custom OLED pitch black theme with flame accents (defined in ~/.config/ghostty/themes/)
+theme = blackflame
+# 0.92 opacity eliminates background noise while preserving subtle desktop depth
+background-opacity = 0.92
+
+# Completely borderless: no window decorations, titlebars, or buttons.
+# Moving and resizing is handled by the window manager (Super+drag on GNOME).
+window-decoration = none
+
+# ---- Top bar & Tab bar -------------------------------------------------------
+# `ghostty` derives the titlebar from the terminal background/foreground, so any
+# decoration matches Melange Dark and the 0.92 opacity.
+window-theme = ghostty
+
+# `flat` removes drop shadows so the terminal reads as a seamless surface.
+gtk-toolbar-style = flat
+
+# `native` keeps titlebar and tab strip separate so window-show-tab-bar
+# cleanly controls tab strip suppression without conflicting with header styles.
+gtk-titlebar-style = native
+
+# Hide the top tab bar completely for a pure borderless look.
+# Tabs remain fully navigable via keybindings (ctrl+tab, alt+1..9)
+# and visually accessible via the tab overview (ctrl+shift+b).
+window-show-tab-bar = never
+
+# Clean, non-distracting cursor
+cursor-style = bar
+cursor-style-blink = false
+
+# Balanced margins prevent text crowding against window borders
+window-padding-x = 12
+window-padding-y = 10
+window-padding-balance = true
+confirm-close-surface = false
+
+# Hide mouse pointer while typing to keep reading flow unobstructed
+mouse-hide-while-typing = true
+
+# Dim inactive splits to 65% so the active reading/coding buffer stands out
+unfocused-split-opacity = 0.65
+
+# Apply that same 0.92 opacity to cells that set an explicit background colour.
+# Without this, apps that repaint their own background — Neovim and tmux are the
+# documented examples — stay fully opaque and the transparency looks broken.
+background-opacity-cells = true
+
+# Ensures minimum contrast on transparent backgrounds.
+# 1.1 avoids invisible text without forcing colors toward unnatural extremes.
+minimum-contrast = 1.1
+
+# =========================================================
+# Session & Daemon Behaviour
+# =========================================================
+# Shares GTK runtime across windows, dropping launch latency from 250ms to 15ms
+gtk-single-instance = true
+
+# NOTE: window-save-state is deliberately not set. The option exists on Linux,
+# but restoring windows/tabs/splits is implemented for macOS only — the GTK path
+# is waiting on the GTK Session Management API (ghostty discussion #11549,
+# closed 2026-03). Setting it here would be a no-op, not a working feature.
+
+# Per-surface resource containment. `linux-cgroup` already defaults to
+# `single-instance`, which together with gtk-single-instance is exactly this
+# setup, so surfaces already run in their own transient systemd scopes and only
+# the limits are worth setting.
+#   memory-limit is a *soft* MemoryHigh (8 GiB): a surface is throttled, not
+#     killed; systemd-oomd, active on this machine, turns sustained pressure
+#     into a kill.
+#   processes-limit is a *hard* TasksMax: a fork bomb is stopped at the tab.
+# Both are deliberately generous — they bound a runaway, not normal work.
+linux-cgroup-memory-limit = 8589934592
+linux-cgroup-processes-limit = 8192
+
+# Automatically preserve current directory path across new splits
+split-inherit-working-directory = true
+
+# Notify on long-running command completion when terminal is unfocused.
+# These actions accumulate rather than replace, and `bell` is on by default, so
+# a bare `notify` would leave the terminal bell ringing as well. `no-bell`
+# negates the default, leaving only the desktop notification.
+desktop-notifications = true
+notify-on-command-finish = unfocused
+notify-on-command-finish-action = no-bell,notify
+
+# =========================================================
+# Research & Productivity Primitives
+# =========================================================
+# 50 MB per surface (five times Ghostty's 10 MB default): generous history for
+# build logs, benchmarks and LLM traces. This is a ceiling, not a reservation —
+# the manual notes scrollback is allocated lazily up to the limit, so a larger
+# value costs nothing until that much history exists; it does bound the worst
+# case per tab and split.
+scrollback-limit = 50000000
+
+# Seamless research clipboard: selecting text copies it instantly
+copy-on-select = clipboard
+clipboard-trim-trailing-spaces = true
+clipboard-paste-protection = true
+
+# Interactive clickable URLs for arXiv, GitHub, and documentation references
+link-url = true
+
+# =========================================================
+# Shell Integration & Session
+# =========================================================
+# `detect` is the default and picks up zsh here. The feature list is spelled out
+# in full because an omitted feature falls back to its *default* rather than
+# staying off, so anything left out would silently come back on.
+#   cursor  bar cursor at the prompt
+#   sudo    wrap sudo so it preserves Ghostty's terminfo
+#   title   set the window title from the shell
+#   path    keep the working directory in sync
+# ssh-env and ssh-terminfo are left at their defaults (disabled).
+shell-integration = detect
+shell-integration-features = cursor,sudo,title,path
+
+# Keep a zoomed split zoomed and move the zoom to the split you navigate to,
+# instead of unzooming on every goto_split. New in 1.3.
+split-preserve-zoom = navigation
+
+# Machine-local overrides, mirroring zsh's `local.zsh`. The leading `?` suppresses
+# the missing-file error, so this is a no-op until the file exists; it is
+# gitignored so local edits never reach the repository.
+config-file = ?local.conf
+
+# Default shell
+command = /usr/bin/zsh
+
+# =========================================================
+# Smooth Animations & Rendering Performance
+# =========================================================
+# Hardware VSync synchronization for tear-free display refresh
+window-vsync = true
+
+# Fluid Neovide-style smooth gliding cursor animation shader.
+#
+# `true` is the default and is required for the trail to animate: the focused
+# surface runs a continuous animation loop whenever custom shaders are loaded.
+# The manual prices that loop at "slightly more CPU (generally less than 10%)".
+# `false` stops animation entirely (the surface redraws only when it updates);
+# `always` keeps the loop running on unfocused surfaces too, at more CPU per
+# surface, which this config does not need.
+custom-shader = shaders/cursor_warp.glsl
+custom-shader-animation = true
+
+# =========================================================
+# Keybindings
+# =========================================================
+# Ghostty 1.3 already binds the common cases, so only genuine gaps are filled
+# here. Verified defaults (`ghostty +list-keybinds`):
+#   ctrl+shift+t / ctrl+shift+w    new / close tab
+#   ctrl+tab / ctrl+shift+tab      next / previous tab
+#   alt+1..8 / alt+9               go to tab N / last tab
+#   ctrl+shift+o / ctrl+shift+e    split right / split down
+#   ctrl+alt+arrow_*               move between splits
+#   super+ctrl+shift+arrow_*       resize splits
+#   ctrl+shift+enter               zoom the focused split
+#   ctrl+shift+f / ctrl+shift+p    search / command palette
+#   ctrl+= / ctrl+- / ctrl+0       font size up / down / reset
+#   ctrl+shift+r                   reload config (custom bind below)
+
+# Drop-down scratch terminal, reachable from anywhere on the desktop.
+quick-terminal-position = top
+quick-terminal-size = 45%
+
+# `global:` requires a desktop implementing the Global Shortcuts portal: the
+# manual names KDE Plasma >= 5.27 and GNOME >= 48, plus Hyprland with
+# xdg-desktop-portal-hyprland. It is *not* implemented on wlroots compositors
+# such as Sway, where this binding would silently do nothing. This machine is
+# GNOME 50 on Wayland with xdg-desktop-portal-gnome running, so it works here.
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+
+# Upstream defaults to false on Linux, reasoning that global shortcuts are less
+# accessible there and the quick terminal should stay put until you are done.
+# That reasoning does not hold on this machine (see above), so autohide is on.
+# On a compositor without the portal it must go back to false: otherwise the
+# terminal hides on focus loss with no working keybind to summon it again.
+quick-terminal-autohide = true
+
+# Equalise every split once the layout has drifted.
+# `alt+=` matches tmux/window-manager conventions; `ctrl+shift+g` kept as alternative.
+keybind = alt+equal=equalize_splits
+keybind = ctrl+shift+g=equalize_splits
+
+# NOTE: toggle_background_opacity is deliberately not bound. Ghostty implements it
+# on macOS only (`ghostty +list-actions --docs`), so on this Linux/GTK build the
+# key would be a silent no-op.
+
+# ---- Remaining gaps -----------------------------------------------------------
+# Everything above is a Ghostty default; these cover actions the defaults leave
+# unbound. Each action was checked against `ghostty +list-actions --docs` for
+# platform support, and each trigger against `ghostty +list-keybinds` so none
+# shadows an existing binding (a later bind silently overwrites an earlier one).
+
+# Close the focused split without killing the whole tab (ctrl+shift+w is tab-level).
+# Mnemonic: X = kill pane (tmux convention).
+keybind = ctrl+shift+x=close_surface
+
+# Clear the screen AND the scrollback. Ghostty's clear_screen drops history by
+# design (the equivalent of macOS cmd+k), so this is a deliberate full wipe.
+# Mnemonic: Ctrl+L clears viewport; Ctrl+Shift+L is the hard reset.
+keybind = ctrl+shift+l=clear_screen
+
+# Search the current selection — quicker than opening search and retyping it.
+# Mnemonic: S = Selection search (Ctrl+Shift+F is blank search).
+keybind = ctrl+shift+s=search_selection
+
+# Re-enable the mouse in TUIs that capture it (Neovim, less, htop) so text can be
+# selected natively instead of being forwarded to the app.
+# Mnemonic: M = Mouse reporting toggle.
+keybind = ctrl+shift+m=toggle_mouse_reporting
+
+# Flip borderless <-> titlebar at runtime (a Linux-only action; see the titlebar
+# notes above).
+# Mnemonic: D = Decorations.
+keybind = ctrl+shift+d=toggle_window_decorations
+
+# Visual tab picker; the fallback when the tab bar is hidden. Bound to
+# ctrl+shift+b rather than ctrl+shift+space because GNOME often claims the latter
+# for input-method/emoji switching, which would swallow the key before Ghostty sees it.
+# Mnemonic: B = Buffer / tab overview.
+keybind = ctrl+shift+b=toggle_tab_overview
+
+# Fast config reload without terminating running processes.
+# Mnemonic: R = Reload (overrides default ctrl+shift+,).
+keybind = ctrl+shift+r=reload_config
+
+# Read-only guard for the focused surface: no keystrokes or mouse events reach the
+# PTY, so a stray key cannot disturb a long log capture or a delicate session.
+# Mnemonic: Ctrl+Alt+R = Read-only guard (frees Ctrl+Shift+R for reload).
+keybind = ctrl+alt+r=toggle_readonly
+
+# Tab title & reordering.
+# Mnemonic: Alt+Shift namespace manages tabs (arrows move, T renames).
+keybind = alt+shift+left=move_tab:-1
+keybind = alt+shift+right=move_tab:1
+keybind = alt+shift+t=prompt_tab_title
+
+# Quick copy URL under cursor without needing mouse highlight.
+# Mnemonic: U = URL (Alt+U avoids GTK's Ctrl+Shift+U unicode-input grab).
+keybind = alt+u=copy_url_to_clipboard
+
+# Dump full scrollback history and open directly in $EDITOR for deep search/grep.
+# Mnemonic: E = Editor (much simpler than default super+ctrl+shift+j).
+keybind = ctrl+alt+e=write_scrollback_file:open
