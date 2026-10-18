@@ -1,8 +1,8 @@
-# Spectre 👻
+# Ghost 👻
 
 > Minimalist, high-productivity, research-focused configuration for [Ghostty](https://ghostty.org/).
 
-`spectre` is tuned for a borderless, keyboard-driven terminal workflow on Linux/Wayland with smooth cursor physics, per-surface resource containment, and low-distraction ergonomics.
+`ghost` is tuned for a borderless, keyboard-driven terminal workflow on Linux/Wayland with smooth cursor physics, per-surface resource containment, and low-distraction ergonomics.
 
 ---
 
@@ -23,7 +23,7 @@
 ## Directory Structure
 
 ```text
-spectre/
+ghost/
 ├── config                # Core Ghostty configuration
 ├── shaders/
 │   └── cursor_warp.glsl  # Custom OpenGL cursor animation shader
@@ -35,17 +35,17 @@ spectre/
 
 ## Installation & Symlinking
 
-To link `spectre` to your Ghostty config directory:
+To link `ghost` to your Ghostty config directory:
 
 ```bash
 # Ensure Ghostty config directory exists
 mkdir -p ~/.config/ghostty/shaders
 
 # Symlink config
-ln -sf ~/Projects/spectre/config ~/.config/ghostty/config
+ln -sf ~/Projects/ghost/config ~/.config/ghostty/config
 
 # Symlink custom shaders
-ln -sf ~/Projects/spectre/shaders/cursor_warp.glsl ~/.config/ghostty/shaders/cursor_warp.glsl
+ln -sf ~/Projects/ghost/shaders/cursor_warp.glsl ~/.config/ghostty/shaders/cursor_warp.glsl
 ```
 
 ### Themes & System Auto-Switching
