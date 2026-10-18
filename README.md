@@ -3,8 +3,8 @@ Minimal Ghostty terminal setup.
 ## Install
 
 ```bash
-git clone https://github.com/as1furrahman/ghost.git ~/Projects/ghost
-cd ~/Projects/ghost
+git clone https://github.com/as1furrahman/ghost.git
+cd ghost
 ./install.sh
 ```
 
