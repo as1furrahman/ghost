@@ -1,22 +1,20 @@
 # Ghost 👻
 
-> Minimalist, high-productivity, research-focused configuration for [Ghostty](https://ghostty.org/).
+> Pure, high-productivity, minimal configuration for [Ghostty](https://ghostty.org/).
 
-`ghost` is tuned for a borderless, keyboard-driven terminal workflow on Linux/Wayland with smooth cursor physics, per-surface resource containment, and low-distraction ergonomics.
+`ghost` is tuned for a borderless, keyboard-driven terminal workflow on Linux/Wayland with zero bloat, instant launch times, per-surface resource containment, and low-distraction ergonomics.
 
 ---
 
 ## Highlights
 
-- **Minimal Aesthetic**: Completely borderless (`window-decoration = none`, hidden top tab bar), crisp solid background (default opacity), system theme auto-tracking, and balanced padding.
-- **Smooth Cursor Physics**: Custom GLSL cursor warp shader (`shaders/cursor_warp.glsl`) offering Neovide-like fluid cursor glide trails.
-- **Typography & Ligatures**: Tuned for `Cascadia Code NF` (and `Cascadia Mono NF`) at 13pt with explicit ligatures (`+calt, +liga`) and 25% icon height adjustment.
-- **Performance & Isolation**:
-  - `gtk-single-instance = true` drops launch latency from ~250ms to ~15ms.
-  - Systemd cgroups soft memory throttling (8 GiB) and hard fork-bomb process ceiling (8192 tasks).
-  - 50 MB lazily-allocated scrollback buffer per surface.
+- **Pure Minimal Aesthetic**: Completely borderless (`window-decoration = none`, hidden top tab bar), solid crisp background, dynamic system theme tracking, and balanced padding.
+- **Instant Launch**: `gtk-single-instance = true` delivers ~15ms cold window spawn latency.
+- **Resource Sandboxing**: Systemd cgroups soft memory ceiling (8 GiB) and hard fork-bomb process ceiling (8192 tasks).
+- **50 MB Lazy History**: Ample buffer for long build logs, compiler traces, and debugging sessions.
 - **Dropdown Scratch Terminal**: Global shortcut portal support (`Ctrl+\``) for an autohiding dropdown quake terminal.
 - **Modular Overrides**: Loads `?local.conf` automatically if present without polluting git history.
+- **Optional Cursor Shaders**: Includes smooth GLSL cursor physics in `shaders/cursor_warp.glsl` (opt-in via `local.conf`).
 
 ---
 
@@ -24,9 +22,9 @@
 
 ```text
 ghost/
-├── config                # Core Ghostty configuration
+├── config                # Core Ghostty configuration (~40 lines)
 ├── shaders/
-│   └── cursor_warp.glsl  # Custom OpenGL cursor animation shader
+│   └── cursor_warp.glsl  # Optional OpenGL cursor animation shader
 ├── .gitignore            # Ignores local.conf and OS metadata
 └── README.md
 ```
@@ -35,50 +33,28 @@ ghost/
 
 ## Installation & Symlinking
 
-To link `ghost` to your Ghostty config directory:
-
 ```bash
 # Ensure Ghostty config directory exists
-mkdir -p ~/.config/ghostty/shaders
+mkdir -p ~/.config/ghostty
 
 # Symlink config
 ln -sf ~/Projects/ghost/config ~/.config/ghostty/config
-
-# Symlink custom shaders
-ln -sf ~/Projects/ghost/shaders/cursor_warp.glsl ~/.config/ghostty/shaders/cursor_warp.glsl
 ```
-
-### Themes & System Auto-Switching
-Ghostty automatically tracks your desktop environment's appearance (light or dark mode):
-```ini
-theme = light:Melange Light,dark:Melange Dark
-window-theme = auto
-```
-You can customize this to any pair or override it locally in `local.conf`.
 
 ---
 
-## Keybindings Cheat Sheet
+## Essential Custom Keybindings
 
-| Category | Shortcut | Action |
+All standard Ghostty bindings (`Ctrl+Shift+T/W`, `Ctrl+Shift+O/E`, `Ctrl+Alt+Arrows`, `Ctrl+Shift+F`) work out of the box. Ghost only registers essential gap-fillers:
+
+| Shortcut | Action | Description |
 | :--- | :--- | :--- |
-| **Quick Terminal** | `global:Ctrl+\`` | Toggle top dropdown scratch terminal (45% height) |
-| **Splits** | `Ctrl+Shift+O` / `Ctrl+Shift+E` | Split right / Split down |
-| | `Ctrl+Alt+Arrows` | Navigate between splits |
-| | `Super+Ctrl+Shift+Arrows` | Resize active split |
-| | `Alt+=` / `Ctrl+Shift+G` | Equalize all splits |
-| | `Ctrl+Shift+Enter` | Toggle split zoom (preserved across navigation) |
-| | `Ctrl+Shift+X` | Close active split (without closing the tab) |
-| **Tabs** | `Ctrl+Tab` / `Ctrl+Shift+Tab` | Next / Previous tab |
-| | `Alt+1..9` | Go to tab 1–9 / Last tab |
-| | `Ctrl+Shift+B` | Toggle visual tab overview / buffer picker |
-| | `Alt+Shift+Left/Right` | Move active tab position |
-| | `Alt+Shift+T` | Rename tab |
-| **Productivity** | `Ctrl+Shift+M` | Toggle mouse reporting (copy text in TUIs like htop/Neovim) |
-| | `Alt+U` | Copy URL currently under cursor to clipboard |
-| | `Ctrl+Alt+E` | Dump scrollback into `$EDITOR` |
-| | `Ctrl+Shift+S` | Search selection directly |
-| | `Ctrl+Shift+L` | Clear screen and wipe scrollback |
-| **Safety & System**| `Ctrl+Alt+R` | Toggle read-only guard (locks surface from keystrokes) |
-| | `Ctrl+Shift+D` | Toggle window decorations / titlebars |
-| | `Ctrl+Shift+R` | Reload configuration instantly |
+| `global:Ctrl+\`` | `toggle_quick_terminal` | Top dropdown scratchpad terminal (45% height) |
+| `Alt+=` | `equalize_splits` | Reset all split sizes equally |
+| `Ctrl+Shift+X` | `close_surface` | Close active pane without killing the tab |
+| `Ctrl+Shift+B` | `toggle_tab_overview` | Visual tab overview (when tab bar is hidden) |
+| `Ctrl+Shift+R` | `reload_config` | Instant hot reload |
+| `Ctrl+Shift+M` | `toggle_mouse_reporting` | Unhook mouse reporting in TUIs (`htop`, `neovim`) |
+| `Ctrl+Alt+R` | `toggle_readonly` | Lock surface to prevent accidental keystrokes |
+| `Alt+U` | `copy_url_to_clipboard` | Instantly copy URL under cursor |
+| `Ctrl+Alt+E` | `write_scrollback_file:open` | Dump scrollback straight into `$EDITOR` |

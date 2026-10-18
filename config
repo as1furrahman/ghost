@@ -9,20 +9,17 @@ window-padding-y = 10
 window-padding-balance = true
 confirm-close-surface = false
 
-# --- Cursor & Typography ---
+# --- Typography & Cursor ---
 font-family = "Cascadia Code NF"
-font-family = "Cascadia Mono NF"
 font-size = 13
-adjust-icon-height = 25%
 cursor-style = bar
 cursor-style-blink = false
 mouse-hide-while-typing = true
 
-# --- Performance & Isolation ---
+# --- Performance & Sandboxing ---
 gtk-single-instance = true
 linux-cgroup-memory-limit = 8589934592
 linux-cgroup-processes-limit = 8192
-custom-shader = shaders/cursor_warp.glsl
 
 # --- Shell & Workflow ---
 scrollback-limit = 50000000
@@ -41,15 +38,9 @@ keybind = global:ctrl+grave_accent=toggle_quick_terminal
 # --- Keybindings ---
 keybind = alt+equal=equalize_splits
 keybind = ctrl+shift+x=close_surface
-keybind = ctrl+shift+l=clear_screen
-keybind = ctrl+shift+s=search_selection
-keybind = ctrl+shift+m=toggle_mouse_reporting
-keybind = ctrl+shift+d=toggle_window_decorations
 keybind = ctrl+shift+b=toggle_tab_overview
 keybind = ctrl+shift+r=reload_config
+keybind = ctrl+shift+m=toggle_mouse_reporting
 keybind = ctrl+alt+r=toggle_readonly
-keybind = alt+shift+left=move_tab:-1
-keybind = alt+shift+right=move_tab:1
-keybind = alt+shift+t=prompt_tab_title
 keybind = alt+u=copy_url_to_clipboard
 keybind = ctrl+alt+e=write_scrollback_file:open
