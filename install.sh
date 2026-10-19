@@ -115,5 +115,21 @@ if [ "$OS_TYPE" = "Linux" ]; then
         sed 's/ --shell-integration-features=ssh-env//' "$SRC_FILE" > "$DEST_FILE"
         echo "🔧 Launcher override written: $DEST_FILE"
     done
+
+    # Modern GNOME/D-Bus delegates activation to systemd user manager.
+    # Provide a drop-in override for app-com.mitchellh.ghostty.service so
+    # systemd also strips --shell-integration-features=ssh-env.
+    SYSTEMD_USER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/app-com.mitchellh.ghostty.service.d"
+    mkdir -p "$SYSTEMD_USER_DIR"
+    cat > "$SYSTEMD_USER_DIR/override.conf" <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/bin/ghostty --gtk-single-instance=true --initial-window=false
+EOF
+    echo "🔧 Systemd user unit override written: $SYSTEMD_USER_DIR/override.conf"
+    if command -v systemctl &>/dev/null; then
+        systemctl --user daemon-reload 2>/dev/null || true
+    fi
+
     echo "ℹ️  Restart Ghostty (or re-login for D-Bus) to pick up the launcher overrides."
 fi
