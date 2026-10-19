@@ -2,14 +2,14 @@
 
 # --- Appearance & Theme ---
 theme = light:Melange Light,dark:Melange Dark
-window-decoration = auto
 window-show-tab-bar = never
 window-padding-x = 12
 window-padding-y = 10
 window-padding-balance = true
 unfocused-split-opacity = 0.85
-resize-overlay = after-first
-confirm-close-surface = false
+
+# Never close a surface with a running command without asking.
+confirm-close-surface = true
 
 # --- Typography & Cursor ---
 font-family = "Cascadia Code NF"
@@ -26,16 +26,18 @@ linux-cgroup-processes-limit = 8192
 
 # --- Shaders & Visual FX ---
 custom-shader = shaders/cursor_warp.glsl
-custom-shader-animation = true
 
 # --- Shell & Workflow ---
 command = /usr/bin/zsh
-scrollback-limit = 1000000
+scrollback-limit = 200000
 copy-on-select = clipboard
 split-preserve-zoom = navigation
 notify-on-command-finish = unfocused
 notify-on-command-finish-action = no-bell,notify
 shell-integration-features = cursor,sudo,title,path
+
+# Machine-local overrides belong in ~/.config/ghostty/local.conf (gitignored).
+# `?` keeps the path optional, so a missing file is not an error.
 config-file = ?local.conf
 
 # --- Quick Terminal ---

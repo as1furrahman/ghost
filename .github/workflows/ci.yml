@@ -46,4 +46,4 @@ jobs:
           ghostty --version
 
       - name: Validate Configuration
-        run: ghostty +validate-config --config-file=./config
+        run: ghostty +validate-config --config-file=./config.ghostty

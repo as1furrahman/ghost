@@ -29,16 +29,24 @@ echo "👻 Installing Ghost Ghostty Configuration..."
 # 1. Ensure target config directory exists
 mkdir -p "$CONFIG_DIR"
 
-# 2. Backup existing regular config file (skip if already a symlink)
-if [ -f "$CONFIG_DIR/config" ] && [ ! -L "$CONFIG_DIR/config" ]; then
-    BACKUP_PATH="$CONFIG_DIR/config.backup.$(date +%Y%m%d%H%M%S)"
-    echo "📦 Backing up existing config to $BACKUP_PATH"
-    mv "$CONFIG_DIR/config" "$BACKUP_PATH"
-fi
+# 2. Backup existing regular config files (skip symlinks: those are ours)
+for CONFIG_FILE in config.ghostty config; do
+    if [ -f "$CONFIG_DIR/$CONFIG_FILE" ] && [ ! -L "$CONFIG_DIR/$CONFIG_FILE" ]; then
+        BACKUP_PATH="$CONFIG_DIR/$CONFIG_FILE.backup.$(date +%Y%m%d%H%M%S)"
+        echo "📦 Backing up existing $CONFIG_FILE to $BACKUP_PATH"
+        mv "$CONFIG_DIR/$CONFIG_FILE" "$BACKUP_PATH"
+    fi
+done
 
-# 3. Create config symlink
-echo "🔗 Linking config -> $CONFIG_DIR/config"
-ln -sf "$REPO_DIR/config" "$CONFIG_DIR/config"
+# 3. Create config symlink. Ghostty 1.3 documents `config.ghostty`; the legacy
+# `config` name still loads, but `config.ghostty` wins when both exist, so drop
+# a stale legacy link to keep exactly one source of truth.
+echo "🔗 Linking config.ghostty -> $CONFIG_DIR/config.ghostty"
+ln -sf "$REPO_DIR/config.ghostty" "$CONFIG_DIR/config.ghostty"
+if [ -L "$CONFIG_DIR/config" ]; then
+    echo "🧹 Removing legacy config symlink"
+    rm -f "$CONFIG_DIR/config"
+fi
 
 # 4. Optional shaders directory link
 if [ -f "$REPO_DIR/shaders/cursor_warp.glsl" ]; then
@@ -88,4 +96,24 @@ if command -v ghostty &>/dev/null; then
     fi
 else
     echo "ℹ️  Ghostty binary not found. Install it from https://ghostty.org/docs/install"
+fi
+
+# 7. Linux launchers pass --shell-integration-features=ssh-env, and a CLI value
+#    replaces the config value wholesale instead of merging with it, which
+#    silently disables the config's `sudo` feature. Ship sanitised user-level
+#    copies so every launch path (desktop entry and D-Bus activation) honours
+#    the config. Regenerated on each run, so re-run this script after upgrades.
+if [ "$OS_TYPE" = "Linux" ]; then
+    DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+    for LAUNCHER in \
+        "/usr/share/applications/com.mitchellh.ghostty.desktop:$DATA_DIR/applications/com.mitchellh.ghostty.desktop" \
+        "/usr/share/dbus-1/services/com.mitchellh.ghostty.service:$DATA_DIR/dbus-1/services/com.mitchellh.ghostty.service"; do
+        SRC_FILE="${LAUNCHER%%:*}"
+        DEST_FILE="${LAUNCHER#*:}"
+        [ -f "$SRC_FILE" ] || continue
+        mkdir -p "$(dirname "$DEST_FILE")"
+        sed 's/ --shell-integration-features=ssh-env//' "$SRC_FILE" > "$DEST_FILE"
+        echo "🔧 Launcher override written: $DEST_FILE"
+    done
+    echo "ℹ️  Restart Ghostty (or re-login for D-Bus) to pick up the launcher overrides."
 fi
