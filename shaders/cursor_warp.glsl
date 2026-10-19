@@ -3,8 +3,8 @@ vec3 sRGBToLinear(vec3 c) {
     return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c));
 }
 
-// --- CONFIGURATION ---
-vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a); // for custom color: vec4(0.2, 0.6, 1.0, 0.5); (wrap in sRGBToLinear for correct brightness)
+// To use a custom trail color instead of the terminal cursor color, uncomment below:
+// #define CUSTOM_TRAIL_COLOR vec4(0.2, 0.6, 1.0, 0.5)
 const float DURATION = 0.2; // total animation time
 const float TRAIL_SIZE = 0.8; // 0.0 = all corners move together. 1.0 = max smear (leading corners jump instantly)
 const float THRESHOLD_MIN_DISTANCE = 1.5; // min distance to show trail (units of cursor height)
@@ -130,7 +130,8 @@ vec2 normalize(vec2 value, float isPosition) {
 }
 
 float antialising(float distance, float blurAmount) {
-  return 1. - smoothstep(0., normalize(vec2(blurAmount, blurAmount), 0.).x, distance);
+  float blurWidth = max(1e-5, normalize(vec2(blurAmount, blurAmount), 0.).x);
+  return 1. - smoothstep(0., blurWidth, distance);
 }
 
 // Determines animation duration based on a corner's alignment with the move direction(dot product)
@@ -275,13 +276,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         // tiny epsilon to avoid division by zero if moveVec is (0,0)
         float fadeProgress = clamp(dot(fragVec, moveVec) / (dot(moveVec, moveVec) + 1e-6), 0.0, 1.0);
 
-        vec4 trail = TRAIL_COLOR;
+        #ifdef CUSTOM_TRAIL_COLOR
+        vec4 trail = vec4(sRGBToLinear(CUSTOM_TRAIL_COLOR.rgb), CUSTOM_TRAIL_COLOR.a);
+        #else
+        vec4 trail = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a);
+        #endif
         
         float effectiveBlur = BLUR;
         if (BLUR < 2.5) {
           // no antialising on horizontal/vertical movement, fixes 'pulse' like thing on end cursor
           float isDiagonal = abs(s.x) * abs(s.y); // 1.0 if diagonal, 0.0 if H/V
-          float effectiveBlur = mix(0.0, BLUR, isDiagonal);
+          effectiveBlur = mix(0.0, BLUR, isDiagonal);
         }
         float shapeAlpha = antialising(sdfTrail, effectiveBlur); // shape mask
 
