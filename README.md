@@ -14,23 +14,6 @@ Or via one-liner:
 curl -fsSL https://raw.githubusercontent.com/as1furrahman/ghost/main/install.sh | bash
 ```
 
-The installer symlinks `config.ghostty` (the Ghostty 1.3 name) into
-`~/.config/ghostty/` and drops any legacy `config` symlink, since the new name
-takes precedence when both exist. Requires Ghostty 1.3+ — older releases only
-read `config`.
-
-On Linux it also writes sanitised user-level copies of the desktop entry and the
-D-Bus service file: the distro versions pass
-`--shell-integration-features=ssh-env`, and a CLI value replaces the config
-value instead of merging with it, which would silently disable the `sudo`
-shell-integration feature. Re-run the installer after a Ghostty upgrade to
-regenerate them.
-
-## Machine-local overrides
-
-Put anything host-specific in `~/.config/ghostty/local.conf` — it is gitignored
-and pulled in through `config-file = ?local.conf`.
-
 ## Keybindings
 
 | Key | Action |
