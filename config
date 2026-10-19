@@ -7,6 +7,8 @@ window-show-tab-bar = never
 window-padding-x = 12
 window-padding-y = 10
 window-padding-balance = true
+unfocused-split-opacity = 0.85
+resize-overlay = after-first
 confirm-close-surface = false
 
 # --- Typography & Cursor ---
@@ -14,6 +16,7 @@ font-family = "Cascadia Code NF"
 font-size = 13
 cursor-style = bar
 cursor-style-blink = false
+cursor-click-to-move = true
 mouse-hide-while-typing = true
 
 # --- Performance & Sandboxing ---
@@ -21,9 +24,13 @@ gtk-single-instance = true
 linux-cgroup-memory-limit = 8589934592
 linux-cgroup-processes-limit = 8192
 
+# --- Shaders & Visual FX ---
+custom-shader = shaders/cursor_warp.glsl
+custom-shader-animation = true
+
 # --- Shell & Workflow ---
 command = /usr/bin/zsh
-scrollback-limit = 50000000
+scrollback-limit = 1000000
 copy-on-select = clipboard
 split-preserve-zoom = navigation
 notify-on-command-finish = unfocused
@@ -37,6 +44,8 @@ quick-terminal-autohide = true
 keybind = ctrl+grave_accent=toggle_quick_terminal
 
 # --- Keybindings ---
+keybind = ctrl+shift+p=toggle_command_palette
+keybind = ctrl+shift+z=toggle_split_zoom
 keybind = alt+equal=equalize_splits
 keybind = ctrl+shift+x=close_surface
 keybind = ctrl+shift+d=toggle_window_decorations
