@@ -30,6 +30,7 @@ jobs:
         run: |
           export XDG_CONFIG_HOME="$RUNNER_TEMP/.config"
           export XDG_DATA_HOME="$RUNNER_TEMP/.local/share"
+          export INSTALL_FONT="n"
           ./install.sh
 
   validate-config:
