@@ -28,13 +28,13 @@ linux-cgroup-processes-limit = 8192
 custom-shader = shaders/cursor_warp.glsl
 
 # --- Shell & Workflow ---
-command = /usr/bin/zsh
+command = zsh
 scrollback-limit = 200000
 copy-on-select = clipboard
 split-preserve-zoom = navigation
 notify-on-command-finish = unfocused
 notify-on-command-finish-action = no-bell,notify
-shell-integration-features = cursor,sudo,title,path
+shell-integration-features = cursor,sudo,title,path,ssh-env,ssh-terminfo
 
 # Machine-local overrides belong in ~/.config/ghostty/local.conf (gitignored).
 # `?` keeps the path optional, so a missing file is not an error.
