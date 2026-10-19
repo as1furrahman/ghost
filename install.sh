@@ -66,16 +66,18 @@ if [ "$HAS_FONT" = true ]; then
     echo "✅ 'Cascadia Code NF' font is installed."
 else
     echo "⚠️  'Cascadia Code NF' font was not detected."
-    INSTALL_FONT="n"
-    if [ -t 0 ]; then
-        read -p "Would you like to auto-download CascadiaCode Nerd Font? [Y/n] " -n 1 -r
-        echo
-        [[ ! $REPLY =~ ^[Nn]$ ]] && INSTALL_FONT="y"
-    else
-        INSTALL_FONT="y"
+    INSTALL_FONT="${INSTALL_FONT:-}"
+    if [ -z "$INSTALL_FONT" ]; then
+        if [ -t 0 ]; then
+            read -p "Would you like to auto-download CascadiaCode Nerd Font? [Y/n] " -n 1 -r
+            echo
+            [[ ! $REPLY =~ ^[Nn]$ ]] && INSTALL_FONT="y" || INSTALL_FONT="n"
+        else
+            INSTALL_FONT="y"
+        fi
     fi
 
-    if [ "$INSTALL_FONT" = "y" ] && command -v curl &>/dev/null && command -v tar &>/dev/null; then
+    if [ "$INSTALL_FONT" = "y" ] && command -v curl &>/dev/null && command -v tar &>/dev/null && command -v xz &>/dev/null; then
         echo "⬇️  Downloading CascadiaCode Nerd Font..."
         mkdir -p "$FONT_DIR/CascadiaCode"
         curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.tar.xz" | tar -xJ -C "$FONT_DIR/CascadiaCode"
@@ -119,16 +121,20 @@ if [ "$OS_TYPE" = "Linux" ]; then
     # Modern GNOME/D-Bus delegates activation to systemd user manager.
     # Provide a drop-in override for app-com.mitchellh.ghostty.service so
     # systemd also strips --shell-integration-features=ssh-env.
-    SYSTEMD_USER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/app-com.mitchellh.ghostty.service.d"
-    mkdir -p "$SYSTEMD_USER_DIR"
-    cat > "$SYSTEMD_USER_DIR/override.conf" <<'EOF'
+    GHOSTTY_BIN="$(command -v ghostty 2>/dev/null || true)"
+    if [ -n "$GHOSTTY_BIN" ] || [ -f "/usr/share/dbus-1/services/com.mitchellh.ghostty.service" ]; then
+        GHOSTTY_EXEC="${GHOSTTY_BIN:-/usr/bin/ghostty}"
+        SYSTEMD_USER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/app-com.mitchellh.ghostty.service.d"
+        mkdir -p "$SYSTEMD_USER_DIR"
+        cat > "$SYSTEMD_USER_DIR/override.conf" <<EOF
 [Service]
 ExecStart=
-ExecStart=/usr/bin/ghostty --gtk-single-instance=true --initial-window=false
+ExecStart=$GHOSTTY_EXEC --gtk-single-instance=true --initial-window=false
 EOF
-    echo "🔧 Systemd user unit override written: $SYSTEMD_USER_DIR/override.conf"
-    if command -v systemctl &>/dev/null; then
-        systemctl --user daemon-reload 2>/dev/null || true
+        echo "🔧 Systemd user unit override written: $SYSTEMD_USER_DIR/override.conf"
+        if command -v systemctl &>/dev/null; then
+            systemctl --user daemon-reload 2>/dev/null || true
+        fi
     fi
 
     echo "ℹ️  Restart Ghostty (or re-login for D-Bus) to pick up the launcher overrides."
